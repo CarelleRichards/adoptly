@@ -23,6 +23,11 @@ Note that the application is no longer live on the Azure platform.
 
 <img src="https://github.com/CarelleRichards/adoptly/assets/137973963/7516329c-59a1-4bc1-be91-b9ecb8e7a071"><br>
 
+## Database entity-relationship diagram
+
+Adoptly implements a relational database using Azure SQL Database.
+
+<img src="https://github.com/CarelleRichards/adoptly/assets/137973963/183ec438-2c74-466e-b9bf-14062a35b030"><br>
 
 ## Application preview screenshots
 
@@ -38,7 +43,7 @@ Note that the application is no longer live on the Azure platform.
 ### Pet search
 <img src="https://github.com/CarelleRichards/adoptly/assets/137973963/aa77020b-ddf4-461d-8577-9e72738e13ad" width=800px>
 
-### Pet matchmaking quiz
+## Pet matchmaking quiz
 <img src="https://github.com/CarelleRichards/adoptly/assets/137973963/338f1741-589c-41ee-98c9-042916c78332" width=800px>
 
 ### Pet matchmaking quiz results
