@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = ViewBag.Title;
+}
+
+<div class="row m-5 justify-content-md-center">
+    <div class="col-md-6 col-12 p-5 bg-white shadow-sm rounded-3">
+        <div>
+            <h1 class="adoptly-font-medium mb-1">@ViewBag.Title</h1>
+            <p class="small text-muted">You will need to verify your email to access your account.</p>
+        </div>
+        <div class="p-5 text-center">
+            <img class="w-25" src="~/assets/img/logos/Colourmark_Square_Main.png" alt="This image is the logo for the Adoptly website."/>
+        </div>
+        <span class="small text-muted">
+            If you have not received the email after a few minutes, check your spam folder or click here to
+            @Html.ActionLink("resend the email", "ResendVerification", "SignUp", new { email = ViewBag.Email }, new { @class = "adoptly-link" }).
+        </span>
+    </div>
+</div>

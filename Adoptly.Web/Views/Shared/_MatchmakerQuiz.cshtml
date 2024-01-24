@@ -1,0 +1,90 @@
+﻿@model Quiz
+
+<div class="modal fade" id="quizModal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content p-2">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title fw-bold adoptly-color-paprika" id="quizModalLabel">Matchmaking quiz</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Matchmaker" asp-action="Submit" novalidate>
+                <div class="modal-body">
+                    <fieldset class="quiz-radio">
+                        
+                        <legend class="fw-bold pb-2 mb-2">1. @Model.Questions[1].Prompt</legend>
+                        @foreach (var option in @Model.Questions[1].Options)
+                        {
+                            var id = $"1{option.Key}";
+                            <div>
+                                <input asp-for="Answer1" class="form-check-input" type="radio" value="@option.Key" id="@id">
+                                <label class="form-check-label" for="@id">@option.Value</label>
+                            </div>
+                        }
+                        <span asp-validation-for="Answer1" class="small adoptly-text-danger d-block"></span>
+                    </fieldset>
+                    
+                    <fieldset class="quiz-radio">
+                        
+                        <legend class="fw-bold mt-4 pb-2 mb-2">2. @Model.Questions[2].Prompt</legend>
+                        @foreach (var option in @Model.Questions[2].Options)
+                        {
+                            var id = $"2{option.Key}";
+                            <div>
+                                <input asp-for="Answer2" class="form-check-input" type="radio" value="@option.Key" id="@id">
+                                <label class="form-check-label" for="@id">@option.Value</label>
+                            </div>
+                        }
+                        <span asp-validation-for="Answer2" class="small adoptly-text-danger d-block"></span>
+                    </fieldset>
+                    
+                    <fieldset class="quiz-radio">
+                        
+                        <legend class="fw-bold mt-4 pb-2 mb-2">3. @Model.Questions[3].Prompt</legend>
+                        @foreach (var option in @Model.Questions[3].Options)
+                        {
+                            var id = $"3{option.Key}";
+                            <div>
+                                <input asp-for="Answer3" class="form-check-input" type="radio" value="@option.Key" id="@id">
+                                <label class="form-check-label" for="@id">@option.Value</label>
+                            </div>
+                        }
+                        <span asp-validation-for="Answer3" class="small adoptly-text-danger d-block"></span>
+                    </fieldset>
+                    
+                    <fieldset class="quiz-radio">
+                        
+                        <legend class="fw-bold mt-4 pb-2 mb-2">4. @Model.Questions[4].Prompt</legend>
+                        @foreach (var option in @Model.Questions[4].Options)
+                        {
+                            var id = $"4{option.Key}";
+                            <div>
+                                <input asp-for="Answer4" class="form-check-input" type="radio" value="@option.Key" id="@id">
+                                <label class="form-check-label" for="@id">@option.Value</label>
+                            </div>
+                        }
+                        <span asp-validation-for="Answer4" class="small adoptly-text-danger d-block"></span>
+                    </fieldset>
+                    
+                    <fieldset class="quiz-radio">
+                        <legend class="fw-bold mt-4 pb-2 mb-2">5. @Model.Questions[5].Prompt</legend>
+                        @foreach (var option in @Model.Questions[5].Options)
+                        {
+                            var id = $"5{option.Key}";
+                            <div>
+                                <input asp-for="Answer5" class="form-check-input" type="radio" value="@option.Key" id="@id">
+                                <label class="form-check-label" for="@id">@option.Value</label>
+                            </div>
+                        }
+                        <span asp-validation-for="Answer5" class="small adoptly-text-danger d-block"></span>
+                    </fieldset>
+                    
+                </div>
+                
+                <div class="modal-footer border-top-0 d-flex justify-content-between">
+                    <button type="button" class="btn adoptly-btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input class="btn adoptly-btn-primary" type="submit" value="Submit">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

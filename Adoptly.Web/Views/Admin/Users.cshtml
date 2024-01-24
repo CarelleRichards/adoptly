@@ -1,0 +1,98 @@
+﻿@model AllUsersViewModel
+@{
+    ViewData["Title"] = "Users";
+    PaginationViewModel pagination = new()
+    {
+        TotalResults = ViewBag.TotalResults,
+        TotalPages = ViewBag.TotalPages,
+        CurrentPage = ViewBag.CurrentPage,
+        Url = "Admin/Users?"
+    };
+}
+
+<div class="container">
+    <div class="bg-white p-3 mb-3 dashboard-container">
+        <div class="dashboard-content m-5">
+            <h1 class="mb-4">Users</h1>
+            @if (ViewBag.TotalResults == 0)
+            {
+                <h2>No users found</h2>
+                <span>Try again later.</span>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col mb-4">
+                        <form asp-controller="Admin" asp-action="Search" novalidate>
+                            <div class="input-group mb-3 d-flex flex-column">
+                                <div class="pt-3 d-flex flex-row">
+                                    <input asp-for="UserEmail" type="text" class="form-control" placeholder="Search users by email..." aria-label="Search" aria-describedby="button-addon2">
+                                    <button class="btn btn-outline-secondary ms-2" type="submit" id="button-addon2">Search</button>
+                                </div>
+                                <span asp-validation-for="UserEmail" class="small adoptly-text-danger d-block mt-1"></span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-lg-8 my-auto mb-4">
+                        <p class="mb-0">@ViewBag.TotalResults user(s) found</p>
+                    </div>
+
+                    <div class="col-lg-4 mb-4">
+                        <form asp-controller="Admin" asp-action="Filter" method="get" novalidate>
+                            <fieldset class="d-flex gap-4 align-items-center">
+                                <label class="form-check-label" asp-for="SortOrder"></label>
+                                <select asp-for="SortOrder" asp-items="Html.GetEnumSelectList(typeof(UsersSortOrder))"
+                                        class="form-select" onchange="this.form.submit()">
+                                </select>
+                            </fieldset>
+                        </form>
+                        
+
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-4">
+                        <thead>
+                        <tr>
+                            <th class="align-middle" scope="col"></th>
+                            <th class="align-middle" scope="col">Username</th>
+                            <th class="align-middle" scope="col">Email</th>
+                            <th class="align-middle" scope="col">Type</th>
+                            <th class="align-middle" scope="col">Account created</th>
+                            <th class="align-middle" scope="col">Verified</th>
+                            <th class="align-middle" scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (Login login in Model.Logins)
+                        {
+                            string type = login.User is Adopter ? "Adopter" : login.User is Shelter ? "Shelter" : "Admin";
+                            string profilePictureUrl = $"/{type}/ProfilePicture/{login.User.Username}";
+                            string profileUrl = $"/{type}/Profile/{login.User.Username}";
+
+                            <tr>
+                                <td class="align-middle">
+                                    <a href="@profileUrl" class="new-user-link">
+                                        <img class="new-user-img img-fluid" alt="Profile picture" src="@profilePictureUrl">
+                                    </a>
+                                </td>
+                                <td class="align-middle">@login.User.Username</td>
+                                <td class="align-middle">@login.Email</td>
+                                <td class="align-middle">@type</td>
+                                <td class="align-middle">@login.DateCreated.ToLocalTime().ToString("d/M/yyyy, h:mm tt")</td>
+                                <td class="align-middle">@(login.Verified ? "Yes" : "No")</td>
+                                <td class="align-middle">
+                                    <a class="btn rose-btn" href="@profileUrl">View</a>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <partial name="_Pagination" model="@pagination"/>
+            }
+        </div>
+    </div>
+</div>

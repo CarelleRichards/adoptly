@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Application Received";
+}
+
+<div class="row m-5 justify-content-md-center">
+    <div class="col-md-6 col-12 p-5 bg-white shadow-sm rounded-3">
+        <div>
+            <h1 class="adoptly-font-medium mb-1">We have received your application for @ViewBag.PetName!</h1>
+            <p class="small text-muted">Please keep in mind that @ViewBag.ShelterName shelter will review your applications, not Adoptly.</p>
+        </div>
+        <div class="p-5 text-center">
+            <img class="w-25" src="~/assets/img/logos/Colourmark_Square_Main.png" alt="This image is the logo for the Adoptly website." />
+        </div>
+        <span>To check the status of your applications, simply go to the <a href="@Url.Action("Applications", "Adopter")" class="adoptly-link">applications</a> where you can view all of your submitted applications.</span>
+    </div>
+</div>

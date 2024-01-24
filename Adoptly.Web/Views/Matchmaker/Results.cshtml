@@ -1,0 +1,65 @@
+﻿@model List<Match>
+@{
+    ViewData["Title"] = "Matchmaker results";
+
+    PaginationViewModel pagination = new()
+    {
+        TotalResults = ViewBag.TotalMatches,
+        TotalPages = ViewBag.TotalPages,
+        CurrentPage = ViewBag.CurrentPage,
+        Url = "Matchmaker/Results?"
+    };
+}
+
+<div class="row gy-2 p-4 bg-white shadow-sm rounded-3">
+
+    <div class="row gy-1">
+        <h1 class="adoptly-font-medium mb-1">Matchmaker results</h1>
+        <span class="text-muted small">@ViewBag.TotalMatches match(es) found for you</span>
+    </div>
+
+    <div class="container-sm mt-4">
+        <div class="row gy-4">
+
+            @foreach (var match in Model)
+            {
+                <!-- Card -->
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                    <a href="~/Pet/Profile/@match.Pet.Id" style="color: unset; text-decoration: unset;">
+                        <div class="card">
+                            <img src="/Pet/ProfilePicture/@match.Pet.Id" class="card-img-top" alt="Profile picture">
+                            <div class="card-header">
+                                <h3 class="pt-1 fw-bold">@match.Pet.Name</h3>
+                                <span class="text-muted small">Breed: @match.Pet.Breed</span>
+                                <p>
+                                    <span class="badge rounded-pill adoptly-badge-text-bg">@match.Pet.AnimalType</span>
+                                    <span class="badge rounded-pill adoptly-badge-text-bg">@match.Pet.Sex</span>
+                                    <span class="badge rounded-pill adoptly-badge-text-bg">@match.Pet.Age years old</span>
+                                </p>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">@(match.Pet.Description)...</p>
+                                @if (match.Pet.Status == Status.Available)
+                                {
+                                    <span class="small text-success">@match.Pet.Status</span>
+                                }
+                                else if (match.Pet.Status == Status.Adopted)
+                                {
+                                    <span class="small text-danger">@match.Pet.Status</span>
+                                }
+                                else
+                                {
+                                    <span class="small text-muted">@match.Pet.Status</span>
+                                }
+                            </div>
+                            <div class="card-footer text-muted small">
+                                Score: @match.MatchmakingPercent(@ViewBag.TotalQuestions)% match
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+    <partial name="_Pagination" model="@pagination">
+</div>

@@ -1,0 +1,272 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Best team">
+    <meta name="description" content="Found your dream pet? Spread the joy and share your pet-adoption journey on social media. Let the world see the happiness only a pet can bring.">
+    <meta name="keywords" content="Adoptly, Pets, Shelters, Adopters, pet-adoption">
+    <title>@ViewData["Title"] - Adoptly</title>
+    <link rel="icon" type="image/x-icon" href="~/assets/img/logos/Colourmark_Alt.ico">
+    <meta property="og:url" content="https://adoptly.azurewebsites.net">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Adoptly - Every paw deserves a chance">
+    <meta property="og:description" content="Found your dream pet? Spread the joy and share your pet-adoption journey on social media. Let the world see the happiness only a pet can bring.">
+    <meta property="og:image" content="https://adoptly.azurewebsites.net">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    <link rel="preload" type="text/css" href="https://use.typekit.net/uka7ykv.css" data-rocket-async="style" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script async src="https://kit.fontawesome.com/ec073de170.js" crossorigin="anonymous"></script>
+    <link rel="preload" type="text/css" href="~/lib/bootstrap/dist/css/vanillaSelectBox.css" data-rocket-async="style" as="style" onload="this.onload=null;this.rel='stylesheet'">
+</head>
+
+<body>
+<header>
+    <div class="container-fluid d-flex justify-content-between align-items-center py-3 px-4">
+        <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+            <picture class="nav-logo">
+                <source media="(max-width: 575px)" srcset="/assets/img/logos/Primary_Colour_Logo/Colourmark_Square_Main_42w.png">
+                <source media="(max-width: 767px)" srcset="/assets/img/logos/Primary_Colour_Logo/Colourmark_Square_Main_56w.png">
+                <source media="(max-width: 991px)" srcset="/assets/img/logos/Primary_Colour_Logo/Primary_Colour_Logo_60w.png">
+                <source media="(max-width: 1199px)" srcset="/assets/img/logos/Primary_Colour_Logo/Primary_Colour_Logo_193w.png">
+                <img class="main-logo w-100 h-100" src="/assets/img/logos/Primary_Colour_Logo/Primary_Colour_Logo_193w.png" alt="Adoptly logo">
+            </picture>
+        </a>
+    </div>
+    @{
+        bool isLoggedIn = Context.Session.GetString("Username") is not null;
+        string role = isLoggedIn ? Context.Session.GetString("Role") : null;
+        string username = isLoggedIn ? Context.Session.GetString("Username") : null;
+    }
+
+    @if (!isLoggedIn)
+    {
+        <div class="d-flex align-items-center justify-content-between text-decoration-none top-nav-btn">
+            <a class="btn gradient-btn login-btn" asp-controller="Login" asp-action="Index">Log in</a>
+            <a class="btn rose-btn sign-up-btn" asp-controller="SignUp" asp-action="Index">Sign up</a>
+        </div>
+    }
+
+    <div id="hamburger" title="Navigation menu">
+        <label for="check" id="hamburger-label">
+            <em class="hidden">Hamburger menu</em>
+            <input type="checkbox" id="check">
+            <span></span>
+            <span></span>
+            <span></span>
+            @if (role is nameof(Adopter))
+            {
+                @await Component.InvokeAsync("NotificationBadge")
+            }
+        </label>
+    </div>
+</header>
+<div class="d-flex flex-column flex-shrink-0 p-3" style="width: 280px;" id="sidebar">
+    <div style="height: 50px;"></div>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a class="nav-link  @(IsActive("Home", "Index") ? "active" : "")" aria-current="page" asp-controller="Home" asp-action="Index">
+                <i class="fas fa-home me-2"></i>
+                Home
+            </a>
+        </li>
+
+        @if (isLoggedIn)
+        {
+            <!-- Add more list items when user is logged in below -->
+            <li class="nav-item">
+                <a class="nav-link @(IsActive(@role, "Index") ? "active" : "")" asp-controller="@role" asp-action="Index" id="dashboardLink">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(IsActive(@role, "Profile") ? "active" : "")" href="/@role/Profile/@username" id="profileLink">
+                    <i class="fas fa-user me-2"></i>
+                    Profile
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(IsActive("Explore", "Index") ? "active" : "")" asp-controller="Explore" asp-action="Index">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i>
+                    Explore pets
+                </a>
+            </li>
+            @switch (role)
+            {
+                case nameof(Adopter):
+                    <li class="nav-item">
+                        <a class="nav-link @(IsActive("Adopter", "Applications") ? "active" : "")" asp-controller="Adopter" asp-action="Applications">
+                            <i class="fa-solid fa-heart me-2"></i>
+                            Applications
+                            @await Component.InvokeAsync("NotificationPillBadge")
+                        </a>
+                    </li>
+                    break;
+                case nameof(Shelter):
+                    <li class="nav-item">
+                        <a class="nav-link @(IsActive("Shelter", "Applications") ? "active" : "")" asp-controller="Shelter" asp-action="Applications">
+                            <i class="fa-solid fa-heart me-2"></i>
+                            Applications
+                        </a>
+                    </li>
+                    break;
+                case nameof(Admin):
+                    <li class="nav-item">
+                        <a class="nav-link @(IsActive("Admin", "Users") ? "active" : "")" asp-controller="Admin" asp-action="Users">
+                            <i class="fa-solid fa-users me-2"></i>
+                            Users
+                        </a>
+                    </li>
+                    break;
+            }
+        }
+        <!-- Add more static items accessible to all below -->
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Home", "ContactUs") ? "active" : "")" aria-current="page" asp-area=""
+               asp-controller="Home" asp-action="ContactUs">
+                <i class="fas fa-address-book me-2"></i>
+                Contact us
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(IsActive("Home", "AboutUs") ? "active" : "")" aria-current="page" asp-area=""
+               asp-controller="Home" asp-action="AboutUs">
+                <i class="fas fa-info-circle me-2"></i>
+                About us
+            </a>
+        </li>
+
+        <!-- TEMPLATE TO FOLLOW -->
+        @* <li class="nav-item">
+        <a class="nav-link" asp-controller="CONTROLLER" asp-action="ACTION">
+        <i class="FONTAWESOME_ICON_CLASS_HERE me-2"></i>
+        MENU_ITEM_NAME
+        </a>
+        </li> *@
+
+    </ul>
+    <hr>
+
+    @if (isLoggedIn)
+    {
+        <div class="d-flex align-items-center justify-content-between text-decoration-none">
+            <div>
+                <img class="profile-pic menu-pic" alt="Profile picture" style="height: 20px; width: 20px;" src="/@role/ProfilePicture/@username">
+                <span class="ps-1">
+                    <a class="menu-user-link" href="/@role/Profile/@username">@username</a>
+                </span>
+            </div>
+            <a class="btn rose-btn" asp-controller="Login" asp-action="Logout">Log out</a>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex align-items-center justify-content-between text-decoration-none">
+            <a class="btn gradient-btn" style="width: 40%;" asp-controller="Login" asp-action="Index">Log in</a>
+            <a class="btn rose-btn" style="width: 40%;" asp-controller="SignUp" asp-action="Index">Sign up</a>
+        </div>
+    }
+</div>
+<div class="container py-4 px-4">
+    <main>@RenderBody()</main>
+</div>
+<footer class="footer text-muted">
+    <div class="container footer-content py-3 px-4 justify-content-center position-absolute bottom-0" style="left: 0; right: 0;">
+        <div class="row align-items-center pb-4">
+            <div class="col d-flex gap-3">
+                @if (!isLoggedIn)
+                {
+                    <a class="btn gray-btn" asp-controller="Login" asp-action="Admin">Admin log in</a>
+                }
+                else
+                {
+                    <a class="btn gray-btn" asp-controller="Login" asp-action="Logout">Log out</a>
+                }
+            </div>
+            <div class="col text-center">
+                <img src="/assets/img/logos/Footer_Logo.png" alt="Adoptly Logo" class="mb-2 footer-logo" style="width: 78px; height: 69.5px;">
+                <div class="social-icons">
+                    <a aria-label="Adoptly's Facebook page" asp-controller="Home" asp-action="Index" class="mx-2 text-decoration-none">
+                        <i class="fa-brands fa-square-facebook" style="color: #66625B;"></i>
+                    </a>
+                    <a aria-label="Adoptly's Instagram page" asp-controller="Home" asp-action="Index" class="mx-2 text-decoration-none">
+                        <i class="fa-brands fa-instagram" style="color: #66625B;"></i>
+                    </a>
+                    <a aria-label="Adoptly's Twitter page" asp-controller="Home" asp-action="Index" class="mx-2 text-decoration-none">
+                        <i class="fa-brands fa-square-x-twitter" style="color: #66625B;"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col d-flex justify-content-end" style="color: #66625B;">
+                <div class="d-flex gap-2 flex-column">
+                    <p>&copy; 2023 Adoptly</p>
+                    <a class="gray-link align-self-end" asp-controller="Home" asp-action="PrivacyPolicy">Privacy policy</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script async src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+
+@functions {
+
+    public bool IsActive(string controller, string action)
+    {
+        var currentController = ViewContext.RouteData.Values["controller"].ToString();
+        var currentAction = ViewContext.RouteData.Values["action"].ToString();
+        return currentController.Equals(controller, StringComparison.OrdinalIgnoreCase) && currentAction.Equals(action,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+        $(document).ready(function () {
+            function checkWidth() {
+                var windowSize = $(window).width();
+                if (windowSize <= 699) {
+                    $('.nav-logo').attr('src', '/assets/img/logos/Colourmark_Square_Main.png');
+                } else {
+                    $('.nav-logo').attr('src', '/Images/Get?containerName=brand-assets&imgName=Primary_Colour_Logo.png&contentType=image/png');
+                }
+            }
+            checkWidth();
+            $(window).resize(checkWidth);
+        });
+    </script>
+<script>
+        document.getElementById('check').addEventListener('change', toggleSidebar);
+
+        document.getElementById('sidebar').addEventListener('click', function (e) {
+            if (e.target.tagName === 'A') {
+                document.getElementById('check').checked = false;
+                toggleSidebar();
+            }
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        window.onload = function () {
+            var htmlElement = document.documentElement;
+
+            htmlElement.addEventListener('mousemove', function (e) {
+                var pageX = e.clientX - window.innerWidth / 2,
+                    pageY = e.clientY - window.innerHeight / 2;
+
+                htmlElement.style.backgroundPosition = (50 + pageX / 25) + 'px ' + (50 + pageY / 25) + 'px';
+            });
+        };
+    </script>
+</body>
+
+</html>

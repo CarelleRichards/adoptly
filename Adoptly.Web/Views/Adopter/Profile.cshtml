@@ -1,0 +1,107 @@
+﻿@model Adopter
+@{
+    ViewData["Title"] = Model.FirstName + " " + Model.LastName;
+    string role = Context.Session.GetString("Role");
+}
+
+<div class="container mt-5">
+    <ul class="nav nav-tabs rounded-top">
+        <li class="nav-item">
+            <a class="nav-link active d-flex flex-column align-items-center" href="#profile" data-bs-toggle="tab">
+                <p>Profile</p>
+                <i class="fa-solid fa-user"></i>
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content bg-white shadow-sm rounded-3 p-3">
+
+        <div class="tab-pane fade show active" id="profile">
+            <div class="row g-3">
+                <div class="col-md-4 mt-0 p-5 col-12 d-flex flex-column align-items-center position-relative">
+
+                    <!-- Seeded adopter images from Asier (n.d.), Gelpi (n.d.) and Myvisuals (n.d.) -->
+                    <img class="profile-pic mb-3" data-bs-toggle="modal" data-bs-target="#imageModal"
+                         alt="Profile picture" src="/Adopter/ProfilePicture/@Model.Username" style="cursor: pointer;">
+                </div>
+                <div class="col-md-6 mt-0 p-5 col-12 d-flex flex-column align-items-start gap-2">
+                    <h1 class="mb-0">@Model.FirstName @Model.LastName</h1>
+                    <h4 class="mb-4">@Model.Username</h4>
+                    @if (Model.State is not null)
+                    {
+                        <div class="align-items-center mb-2">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span class="ms-4">@Model.State</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <a href="javascript:void(0);" id="backButton" class="btn btn-back position-absolute bottom-0 start-0">Back</a>
+        @if (Context.Session.GetString("Username") is not null && (Context.Session.GetString("Username") == Model.Username || role == nameof(Admin)))
+        {
+            @if (role == nameof(Admin))
+            {
+                <a href="@Url.Action("EditProfile", "Adopter", new { adopterUserName = Model.Username })" class="btn btn-edit position-absolute top-0 end-0 shadow-none">
+                    <i class="fa-solid fa-pen-to-square px-1"></i>
+                    Edit profile
+                </a>
+            }
+            else
+            {
+                <a href="@Url.Action("EditProfile", "Adopter")" class="btn btn-edit position-absolute top-0 end-0 shadow-none">
+                    <i class="fa-solid fa-pen-to-square px-1"></i>
+                    Edit profile
+                </a>
+            }
+        }
+    </div>
+</div>
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@Model.FirstName's Profile Picture</h5>
+                <button type="button" class="btn-close-expand position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                <img class="img-fluid w-100" alt="Profile picture enlarged" src="/Adopter/ProfilePicture/@Model.Username">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var pageHistory = [];
+        var redirectAfterEdit = false;
+
+        $("#backButton").on("click", function () {
+            if (redirectAfterEdit) {
+                window.location = $('#dashboardLink').attr('href');
+                return;
+            }
+
+            if (pageHistory.length > 0) {
+                var previousPage = pageHistory.pop();
+                window.location = previousPage;
+                window.location.reload(true);
+            } else {
+                window.history.back();
+            }
+        });
+
+        function addToHistory() {
+            pageHistory.push(window.location.href);
+        }
+
+        if (window.location.href.includes('Profile') && document.referrer.includes('EditProfile')) {
+            redirectAfterEdit = true;
+        }
+
+        $(document).on("click", "a", addToHistory);
+    });
+
+</script>

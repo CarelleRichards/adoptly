@@ -1,0 +1,135 @@
+@model IEnumerable<Application>
+@{
+    ViewData["Title"] = $"{ViewBag.PetName} -  Archived applications";
+
+    PaginationViewModel pagination = new()
+    {
+        TotalResults = ViewBag.TotalResults,
+        TotalPages = ViewBag.TotalPages,
+        CurrentPage = ViewBag.CurrentPage,
+        Url = $"Shelter/ArchivedPetApplications?petId={ViewBag.PetId}&"
+    };
+}
+
+<div class="row justify-content-md-center p-4 bg-white shadow-sm rounded-3">
+
+    <div class="row justify-content-md-center">
+        <div class="row gy-1 p-0 m-0 justify-content-md-between">
+            <div class="col-md-9 ms-0">
+                <h1 class="adoptly-font-medium mb-1">Archived applications for @ViewBag.PetName</h1>
+                <span class="text-muted small">View all archived applications for @ViewBag.PetName. @ViewBag.PetName has @ViewBag.TotalResults archived application(s).</span>
+            </div>
+            <a class="d-flex justify-content-end col-md-3 ms-auto adoptly-link pe-0 me-0 align-self-end" href="@Url.Action("PetApplications", "Shelter", new {petId = ViewBag.PetId, page = 1})">Active applications</a>
+        </div>
+    </div>
+
+    <div class="row mt-0 pt-0 gy-4 p-0 justify-content-md-center">
+
+        @if (!Model.Any())
+        {
+            <h6 class="mt-5 mb-5 pt-5 pb-5 d-block text-center text-muted">@ViewBag.PetName does not have any archived applications.</h6>
+        }
+        else
+        {
+            @foreach (var application in Model)
+            {
+                <div class="card p-1">
+                    <div class="card-header mt-1 border-0 bg-white d-flex justify-content-between">
+                        <h2 class="small">Pet id: @application.Pet.Id</h2>
+                        @switch (application.Status)
+                        {
+                            case ApplicationStatus.Accepted:
+                                <p class="text-success small">
+                                    <span class="text-muted">Application status:</span> @application.Status
+                                </p>
+                                break;
+                            case ApplicationStatus.Rejected:
+                                <p class="text-danger small">
+                                    <span class="text-muted">Application status:</span> @application.Status
+                                </p>
+                                break;
+                            case ApplicationStatus.Processing:
+                                <p class="text-warning small">
+                                    <span class="text-muted">Application status:</span> @application.Status
+                                </p>
+                                break;
+                            case ApplicationStatus.Received:
+                                <p class="text-info small">
+                                    <span class="text-muted">Application status:</span> @application.Status
+                                </p>
+                                break;
+                            default:
+                                <p class="small">
+                                    <span class="text-muted">Application status:</span> @application.Status
+                                </p>
+                                break;
+                        }
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex gap-5 align-content-center">
+                            <img class="align-self-center application-profile-pic-pet" alt="Profile picture" src="/Pet/ProfilePicture/@application.Pet.Id">
+                            <div class="d-flex flex-column flex-grow-1 justify-content-center">
+                                <ul>
+                                    <li class="small">
+                                        <span class="text-muted">Date applied: </span>@application.DateApplied.ToLocalTime().ToString("d/M/yyyy")
+                                    </li>
+                                </ul>
+                                <div class="row">
+                                    <ul class="col">
+                                        <li class="small">
+                                            <span class="text-muted">Adopter name: </span><a href="@Url.Action("Profile", "Adopter", new { id = application.AdopterUsername })" class="adoptly-link">@application.Adopter.FirstName @application.Adopter.LastName</a>
+                                        </li>
+                                    </ul>
+                                    <ul class="col">
+                                        <li class="small">
+                                            <span class="text-muted">Pet name: </span><a href="@Url.Action("Profile", "Pet", new { id = application.PetId })" class="adoptly-link">@application.Pet.Name</a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                @if (application.Adopter.State is not null)
+                                {
+                                    <div class="row">
+                                        <ul class="col">
+                                            <li class="small">
+                                                <span class="text-muted">Adopter's location: </span>@application.Adopter.State
+                                            </li>
+                                        </ul>
+                                        <ul class="col">
+                                            <li class="small">
+                                                <span class="text-muted">Pet status: </span>@application.Pet.Status
+                                            </li>
+                                        </ul>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <ul>
+                                        <li class="small">
+                                            <span class="text-muted">Pet status: </span>@application.Pet.Status
+                                        </li>
+                                    </ul>
+                                }
+
+                                @if (application.DateProcessed is not null)
+                                {
+                                    <ul>
+                                        <li class="small">
+                                            <span class="text-muted">Date processed: </span>@application.DateProcessed?.ToLocalTime().ToString("d/M/yyyy")
+                                        </li>
+                                    </ul>
+                                }
+                            </div>
+                        </div>
+                        <div class="align-self-end me-0 d-flex gap-1">
+                           <a href="@Url.Action("PetApplication", "Shelter", new { petId = application.PetId, adopterUsername = application.AdopterUsername })" class="btn adoptly-btn-secondary">Details</a>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        }
+
+    </div>
+    <partial name="_Pagination" model="@pagination"/>
+</div>

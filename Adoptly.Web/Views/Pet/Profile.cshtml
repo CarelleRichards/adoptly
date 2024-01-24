@@ -1,0 +1,262 @@
+﻿@model Pet
+@{
+    ViewData["Title"] = Model.Name + " the " + Model.Breed;
+    string role = Context.Session.GetString("Role");
+}
+
+<div class="container mt-5">
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs rounded-top">
+        <li class="nav-item">
+            <a class="nav-link active d-flex flex-column align-items-center" href="#profile" data-bs-toggle="tab">
+                <p>Profile</p><i class="fa-solid fa-paw"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex flex-column align-items-center" href="#shelter" data-bs-toggle="tab">
+                <p>Shelter</p><i class="fa-solid fa-house"></i>
+            </a>
+        </li>
+        @if (Context.Session.GetString("Username") is not null && Context.Session.GetString("Username") == ViewBag.AdopterUsername)
+        {
+            <li class="nav-item">
+                <a class="nav-link d-flex flex-column align-items-center" href="#apply" data-bs-toggle="tab">
+                    <p>Apply</p>
+                    <i class="fa-solid fa-circle-check"></i>
+                </a>
+            </li>
+        }
+    </ul>
+    <div class="tab-content bg-white shadow-sm p-3">
+
+        <!-- Profile tab pane -->
+        <div class="tab-pane fade show active" id="profile">
+            <div class="row g-3">
+                <div class="col-md-6 mt-0 p-5 col-12 d-flex flex-column align-items-center position-relative">
+                    <!--
+                        Seeded pets have been generated using code that randomises the profile picture from a
+                        selection of pictures. These are from alimyakubov (n.d.), Andreaobzerova (n.d.),
+                        aylabaha (n.d. a-b), DaraGor (n.d.), dionoanomalia (n.d.), Firn (n.d.), FurryFritz (n.d. a-b),
+                        Georgina (n.d.), imageBROKER (n.d.), Irina (n.d.), Iulia (n.d.), master1305 (n.d.),
+                        MeganBetteridge (n.d. a-b), New Africa (n.d. a-b), OlgaOvcharenko (n.d.), Pixel-Shot (n.d. a-k),
+                        Richard (n.d.), Richli (n.d.), Sandra (n.d. a-g), vaneeva (n.d.) and Volchanskiy (n.d.)
+                    -->
+                    <img class="profile-pic-pet" data-bs-toggle="modal" data-bs-target="#imageModal"
+                         alt="Profile picture" src="/Pet/ProfilePicture/@Model.Id" style="cursor: pointer;">
+                </div>
+                <div class="d-flex mt-0 flex-column p-5 gap-3 col-md-6 col-12">
+                    <h1>@Model.Name the @Model.Breed</h1>
+                    <p>@Model.Description</p>
+                    <div class="d-flex justify-content-center align-items-center px-5">
+                        <h3>Status: @Html.DisplayFor(x => x.Status)</h3>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center px-5">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-house px-4"></i>
+                            <a class="adoptly-link" href="~/Shelter/Profile/@Model.Shelter.Username">
+                                <span>@Model.Shelter.Name</span>
+                            </a>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span class="px-4">@Model.State</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between px-5">
+                        <p>Age: @Model.Age</p>
+                        <p>Type: @Model.AnimalType</p>
+                        <p>Colour: @Model.Colour</p>
+                    </div>
+                    <div class="row px-5 small border-top">
+                        <div class="col-md-6 pt-3">
+                            <p>Sex: @Model.Sex</p>
+                            <p>Independence: @Model.Independence</p>
+                            <p>Activity level: @Model.ActivityLevel</p>
+                        </div>
+                        <div class="col-md-6 pt-3">
+                            <p>Desexed: @(@Model.Desexed ? "Yes" : "No")</p>
+                            <p>Allergy friendly: @(@Model.AllergyFriendly ? "Yes" : "No")</p>
+                            <p>Budget: @Model.Budget</p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center text-center" style="height: 100%; width: 100%;">
+                        <span class="text-muted pt-3 small border-top">
+                            First listed: @Model.FirstListed.ToLocalTime().ToString("d/M/yyyy, h:mm tt")
+                        </span>
+                    </div>
+
+                    @section Scripts
+                    {
+                        <script>(function (d, s, id) {
+                                var js, fjs = d.getElementsByTagName(s)[0];
+                                if (d.getElementById(id)) return;
+                                js = d.createElement(s);
+                                js.id = id;
+                                js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+                                fjs.parentNode.insertBefore(js, fjs);
+                            }(document, 'script', 'facebook-jssdk'));</script>
+
+                        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v18.0" nonce="QgUAgZYC"></script>
+                    }
+
+                    @if (role is nameof(Shelter) or nameof(Adopter))
+                    {
+                        <div id="fb-root"></div>
+                        <div class="fb-share-container">
+                            <!-- Your share button code -->
+                            <div class="fb-share-button"
+                                 data-href="https://adoptly-development.azurewebsites.net/Pet/Profile/@Model.Id"
+                                 data-layout=""
+                                 data-size="">
+                                <a target="_blank"
+                                   href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse"
+                                   class="fb-xfbml-parse-ignore">
+                                    Share
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Shelter tab pane -->
+        <div class="tab-pane fade" id="shelter">
+            <div class="row g-3">
+                <div class="col-md-6 mt-0 p-5 col-12 d-flex flex-column align-items-center position-relative">
+                    <img class="profile-pic-pet" alt="Profile picture" src="/Shelter/ProfilePicture/@Model.Shelter.Username">
+                </div>
+                <div class="col-md-6 mt-0 p-5 col-12 d-flex flex-column align-items-start gap-2">
+                    <a class="adoptly-link" href="~/Shelter/Profile/@Model.Shelter.Username">
+                        <span class="display-5 mb-4">@Model.Shelter.Name</span>
+                    </a>
+                    <div class="align-items-center mb-2">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span class="ms-4">@Model.Shelter.State</span>
+                    </div>
+                    <div class="align-items-center mb-2">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span class="ms-4">@Model.Shelter.Login.Email</span>
+                    </div>
+                    <!--
+                    <div class="align-items-center mb-5">
+                        <i class="fa-solid fa-phone"></i><span class="ms-4">PHONE NUMBER</span>
+                    </div>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus tincidunt eget eros ut
+                        molestie. Nulla non feugiat tellus. Quisque eget massa et urna aliquet ultricies ut nec orci.
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sit amet ex imperdiet, faucibus
+                        dolor in, tempus sem. Aliquam ornare feugiat interdum. Suspendisse a mauris sit amet felis
+                        laoreet laoreet. Fusce consequat, sem sed imperdiet dignissim, purus ligula pellentesque nunc.
+                    </p>
+                    -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Application tab pane -->
+        @if (Context.Session.GetString("Username") is not null && Context.Session.GetString("Username") == ViewBag.AdopterUsername)
+        {
+            <div class="tab-pane fade" id="apply">
+                <div class="dashboard-content d-flex p-5 gap-4 flex-column flex-grow-1">
+                    @if (Model.Status is Status.Available or Status.OnHold)
+                    {
+                        @if (ViewBag.Applied)
+                        {
+                            <h2>You have already applied for @Model.Name.</h2>
+                            <div>
+                                <p class="small text-muted">
+                                    Please keep in mind that once you apply for a pet from @Model.Shelter.Name,
+                                    they will review your application, not Adoptly.
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            <h2>Apply for @Model.Name?</h2>
+                            <div>
+                                <p>To apply for @Model.Name, you must fill out an application form.</p>
+                                <p>After applying for a pet, to check the status of your application, simply go to the <a href="@Url.Action("Applications", "Adopter")" class="adoptly-link">applications</a> page, where you can view all of your submitted applications.</p>
+                                <p class="small text-muted">Please keep in mind that once you apply for a pet from @Model.Shelter.Name, they will review your application, not Adoptly.</p>
+                            </div>
+                            <a href="@Url.Action("ApplicationForm", "Pet", new { petId = Model.Id, shelterUsername = Model.Shelter.Username })" class="btn btn-edit text-muted position-absolute top-0 end-0 shadow-none">Application form</a>
+                        }
+                    }
+                    else
+                    {
+                        <h2>@Model.Name is @Model.Status.ToString().ToLower()</h2>
+                        <div>
+                            <p>
+                                Would you like to find more pets like @Model.Name who are in need
+                                of a new home? Check out the matchmaking quiz section on your
+                                <a class="adoptly-link" asp-controller="Adopter" asp-action="Index">dashboard</a>!
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Back button -->
+        <a href="javascript:void(0);" id="backButton" class="btn btn-back position-absolute bottom-0 start-0">Back</a>
+
+        <!-- Edit profile button -->
+        @if (Context.Session.GetString("Username") is not null && (Context.Session.GetString("Username") == Model.Shelter.Username || role == nameof(Admin)))
+        {
+            <a href="@Url.Action("EditProfile", "Pet", new { id = Model.Id })" class="btn btn-edit text-muted position-absolute top-0 end-0 shadow-none">
+                <i class="fa-solid fa-pen-to-square px-1"></i>
+                Edit profile
+            </a>
+        }
+    </div>
+
+    <!-- Enlarge profile picture modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">@Model.Name's profile picture</h5>
+                    <button type="button" class="btn-close-expand position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                    <img class="img-fluid w-100" alt="Profile picture enlarged" src="/Pet/ProfilePicture/@Model.Id">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var pageHistory = [];
+        var redirectAfterEdit = false;
+
+        $("#backButton").on("click", function () {
+            if (redirectAfterEdit) {
+                window.location = $('#profileLink').attr('href');
+                return;
+            }
+
+            if (pageHistory.length > 0) {
+                var previousPage = pageHistory.pop();
+                window.location = previousPage;
+                window.location.reload(true);
+            } else {
+                window.history.back();
+            }
+        });
+
+        function addToHistory() {
+            pageHistory.push(window.location.href);
+        }
+
+        if (window.location.href.includes('Profile') && document.referrer.includes('EditProfile')) {
+            redirectAfterEdit = true;
+        }
+
+        $(document).on("click", "a", addToHistory);
+    });
+</script>

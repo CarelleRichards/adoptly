@@ -1,0 +1,251 @@
+﻿@model AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin dashboard";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="text-gradient dashboard-welcome">WELCOME BACK!</h1>
+        <div class="dashboard-search">
+            <partial name="_SearchBar" model="new SearchDataViewModel()">
+        </div>
+    </div>
+
+    <div class="bg-white p-3 mb-3 dashboard-container">
+        <div class="p-2 dashboard-title-box">
+            <h2 class="dashboard-title-text">Adoptly at a glance</h2>
+        </div>
+
+        <div class="dashboard-content mx-5">
+            <div class="row justify-content-center">
+                <div class="col-6 col-md-3 d-flex flex-column">
+                    <p class="glance-p">@Html.DisplayNameFor(x => Model.AdminReport.AverageAdoptionTime)</p>
+                    <div class="row">
+                        @if (Model.AdminReport.PetsAdopted > 0 &&
+                        !(Model.AdminReport.AverageAdoptionTime.Days < 1 &&
+                        Model.AdminReport.AverageAdoptionTime.Hours < 1 &&
+                        Model.AdminReport.AverageAdoptionTime.Minutes < 1))
+                        {
+                            <div class="col-sm-4 time-container">
+                                <div class="time-value">@Model.AdminReport.AverageAdoptionTime.Days</div>
+                                <div class="time-label">DAYS</div>
+                            </div>
+                            <div class="col-sm-4 time-container">
+                                <div class="time-value">@Model.AdminReport.AverageAdoptionTime.Hours</div>
+                                <div class="time-label">HOURS</div>
+                            </div>
+                            <div class="col-sm-4 time-container">
+                                <div class="time-value">@Model.AdminReport.AverageAdoptionTime.Minutes</div>
+                                <div class="time-label">MINUTES</div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-12 text-center">
+                                <p>No data to display</p>
+                            </div>
+                        }
+                    </div>
+                    <div>
+                        <p class="glance-p">@Html.DisplayNameFor(x => Model.AdminReport.PetsAdopted)</p>
+                        <div class="row">
+                            <div class="col-3 time-container">
+                                <p>@Model.AdminReport.PetsAdopted</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 d-flex flex-column">
+                    <div>
+                        <p class="glance-p">@Html.DisplayNameFor(x => Model.AdminReport.PetsAvailable)</p>
+                        <div class="row">
+                            <div class="col-3 time-container">
+                                <p>@Model.AdminReport.PetsAvailable</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="glance-p">@Html.DisplayNameFor(x => Model.AdminReport.AdopterAccounts)</p>
+                        <div class="row">
+                            <div class="col-3 time-container">
+                                <p>@Model.AdminReport.AdopterAccounts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 d-flex flex-column">
+                    <div>
+                        <p class="glance-p">@Html.DisplayNameFor(x => Model.AdminReport.CatsAvailable)</p>
+                        <div class="row">
+                            <div class="col-3 time-container">
+                                <p>@Model.AdminReport.CatsAvailable</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="glance-p">@Html.DisplayNameFor(x => Model.AdminReport.ShelterAccounts)</p>
+                        <div class="row">
+                            <div class="col-3 time-container">
+                                <p>@Model.AdminReport.ShelterAccounts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 d-flex flex-column">
+                    <div>
+                        <p class="glance-p">@Html.DisplayNameFor(x => Model.AdminReport.DogsAvailable)</p>
+                        <div class="row">
+                            <div class="col-3 time-container">
+                                <p>@Model.AdminReport.DogsAvailable</p>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="btn rose-btn mt-3" asp-controller="Admin" asp-action="DownloadOverview">
+                        <i class="fa-solid fa-download"></i>
+                        Download
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3 rounded-3">
+            <div class="bg-white p-3 dashboard-container dashboard-columns d-flex flex-column">
+                <div class="p-2 dashboard-title-box">
+                    <h2 class="dashboard-title-text">Newest users</h2>
+                </div>
+                <div class="dashboard-content d-flex flex-column flex-grow-1">
+                    @if (Model.NewestUsers is null || Model.NewestUsers.Count == 0)
+                    {
+                        <div class="d-flex justify-content-center align-items-center">
+                            <img src="/assets/img/logos/nothing_to_see_here.png" alt="No new users">
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="pt-1 px-5">
+                            @foreach (var user in Model.NewestUsers)
+                            {
+                                string profilePictureUrl;
+                                string profileUrl;
+
+                                if (user.UserType == UserType.Adopter)
+                                {
+                                    profilePictureUrl = $"/Adopter/ProfilePicture/{user.Username}";
+                                    profileUrl = $"Adopter/Profile/{user.Username}";
+                                }
+                                else
+                                {
+                                    profilePictureUrl = $"/Shelter/ProfilePicture/{user.Username}";
+                                    profileUrl = $"Shelter/Profile/{user.Username}";
+                                }
+                                <div class="row pb-3 mb-3 align-items-center border-bottom">
+                                    <div class="col-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center">
+                                        <a href="@profileUrl" class="new-user-link">
+                                            <img class="new-user-img img-fluid" alt="Profile picture" src="@profilePictureUrl">
+                                        </a>
+                                    </div>
+                                    <div class="py-1 col-12 col-sm-4 col-md-6 col-lg-4 text-center new-user-info">
+                                        <span>@user.Username</span>
+                                    </div>
+                                    <div class="py-1 col-12 col-sm-4 col-md-6 col-lg-3 text-center new-user-info">
+                                        <span>@user.DateVerified.GetValueOrDefault().ToLocalTime().ToString("d/M/yyyy, h:mm tt")</span>
+                                    </div>
+                                    <div class="py-1 col-12 col-sm-4 col-md-12 col-lg-3 text-center text-sm-end text-md-center new-user-review">
+                                        <a class="btn rose-btn" href="@profileUrl">Review</a>
+                                    </div>
+                                </div>
+                            }
+
+                            <a asp-controller="Admin" asp-action="Users" class="hyperlink d-block text-center mt-4 view-all-link">
+                                See more
+                                <hr class="my-2" />
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3 rounded-3">
+            <div class="bg-white p-3 dashboard-container dashboard-columns d-flex flex-column">
+                <div class="p-2 dashboard-title-box">
+                    <h2 class="dashboard-title-text">Monthly adoptions @DateTime.Now.Year.ToString()</h2>
+                </div>
+                <div class="dashboard-content d-flex flex-column align-items-center justify-content-center flex-grow-1">
+                    <div class="w-100 h-100 mb-4" id="chart"></div>
+                    <a class="btn rose-btn" asp-controller="Admin" asp-action="DownloadMonthlyAdoptions">
+                        <i class="fa-solid fa-download"></i>
+                        Download
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Google Chart -->
+@section Scripts
+    {
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script>
+
+        google.charts.load('current', { packages: ['corechart', 'bar'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            const jsonData = @Html.Raw(@Model.AdminReport.MonthlyAdoptions);
+            const data = new google.visualization.DataTable(jsonData);
+
+            const options = {
+                'width': '100%',
+                'height': '100%',
+                'chartArea': {
+                    'height': '90%',
+                    'width': '90%',
+                    'bottom': '10%',
+                    'top': 0,
+                    'left': '5%',
+                    'right': '5%'
+                },
+                'legend': 'none',
+                'backgroundColor': {
+                    'fill': 'transparent'
+                },
+                'hAxis': {
+                    'textStyle': {
+                        'color': '#212529',
+                        'fontName': 'new-rubrik, 500',
+                        'fontSize': 16
+                    },
+                },
+                'vAxis': {
+                    'textPosition': 'none',
+                    'color': '#212529',
+                    'fontName': 'new-rubrik, 500',
+                    'maxValue': 100,
+                    'minValue': 0,
+                    'gridlines': { count: 2 }
+                },
+                'baselineColor': 'transparent',
+                'gridlineColor': 'transparent',
+                'bar': {
+                    'groupWidth': '80%',
+                },
+                'colors': ['#F15483'],
+                'tooltip': {
+                    'isHtml': true
+                }
+            };
+
+            const chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+            chart.draw(data, options);
+        }
+        $(window).resize(function () {
+            drawChart();
+        });
+    </script>
+}

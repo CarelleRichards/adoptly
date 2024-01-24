@@ -1,0 +1,181 @@
+@model CreatePetProfileViewModel
+@{
+    ViewData["Title"] = "Create pet profile";
+}
+
+<div class="container mt-5">
+    <ul class="nav nav-tabs rounded-top">
+        <li class="nav-item">
+            <a class="nav-link d-flex flex-column align-items-center active" href="#profile" data-bs-toggle="tab">
+                <p class="text-nowrap">Create pet</p>
+                <i class="fa-solid fa-paw"></i>
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content bg-white shadow-sm p-3">
+        <div class="tab-pane fade show active" id="profile">
+            <form class="row g-3" asp-action="CreatePetProfile" enctype="multipart/form-data" id="profileInformationForm">
+                <input asp-for="Shelter" hidden="hidden" class="form-control">
+                <input asp-for="Shelter.Username" hidden="hidden" class="form-control">
+                <input asp-for="Shelter.Username" hidden="hidden" class="form-control">
+                <input asp-for="Shelter.Name" hidden="hidden" class="form-control">
+                <input asp-for="Shelter.State" hidden="hidden" class="form-control">
+                <input asp-for="ProfilePicture" hidden="hidden" class="form-control">
+                <div class="col-md-6 mt-0 p-5 col-12 d-flex flex-column align-items-center position-relative">
+                    @* <img class="profile-pic-pet" alt="Profile picture" src="/Pet/ProfilePicture/pet_default.png"> *@
+                    <div class="form-group">
+                        <label asp-for="ImageFile" class="form-label">Upload a profile picture</label>
+                        <input class="form-control form-control-lg" asp-for="ImageFile" type="file" accept="image/png, image/heic, image/jpeg, image/jpg" aria-describedby="ProfilePictureHelp">
+                        <div id="ProfilePictureHelp" class="form-text">Accepts png, heic, jpeg and jpg files.<br>Recommended image size is 400 x 400 px.</div>
+                        <span asp-validation-for="ProfilePicture" class="small adoptly-text-danger d-block mt-1"></span>
+                    </div>
+                </div>
+                <div class="d-flex mt-4 d-flex mb-5 flex-column p-5 gap-3 col-md-6 col-12 position-relative">
+                    <div class="row mb-3 d-flex align-items-center">
+                        <div class="col-md-5">
+                            <div class="form-floating">
+                                <input asp-for="Name" class="form-control" placeholder="Enter pet name...">
+                                <label asp-for="Name" class="control-label"></label>
+                                <span asp-validation-for="Name" class="small adoptly-text-danger d-block"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <span class="display-5">the</span>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-floating">
+                                <input asp-for="Breed" class="form-control" placeholder="Enter pet breed...">
+                                <label asp-for="Breed" class="control-label"></label>
+                                <span asp-validation-for="Breed" class="small adoptly-text-danger d-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-floating">
+                        <input asp-for="Description" class="form-control" placeholder="Enter pet description...">
+                        <label asp-for="Description" class="control-label"></label>
+                        <span asp-validation-for="Description" class="small adoptly-text-danger d-block"></span>
+                    </div>
+                    <div class="row px-5 small">
+                        <div class="col-md-4 pt-3">
+                            <div class="form-group">
+                                <label asp-for="Age" class="form-check-label text-center d-block mb-3 mt-2"></label>
+                                <input asp-for="Age" class="form-control" placeholder="Enter pet age...">
+                                <span asp-validation-for="Age" class="small adoptly-text-danger d-block"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 pt-3">
+                            <fieldset class="form-group d-flex flex-column align-items-center">
+                                <legend class="form-check-label text-center d-block mb-3 mt-2">Animal type</legend>
+
+                                <div class="d-flex justify-content-center">
+                                    @foreach (var animalType in typeof(AnimalType).GetEnumNames())
+                                    {
+                                        var id = $"AnimalType{animalType}";
+                                        <div class="form-check form-check-inline">
+                                            <input asp-for="AnimalType" class="form-check-input" type="radio" value="@animalType" id="@id">
+                                            <label for="@id" class="form-check-label">@animalType</label>
+                                        </div>
+                                    }
+                                </div>
+
+                                <span asp-validation-for="AnimalType" class="small adoptly-text-danger mt-2"></span>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-4 pt-3">
+                            <div class="form-group">
+                                <label asp-for="Colour" class="form-check-label text-center d-block mb-3 mt-2"></label>
+                                @Html.DropDownListFor(pet => pet.Colour, Html.GetEnumSelectList(typeof(Colour)), "Colour...", new { @class = "form-select" })
+                                <span asp-validation-for="Colour" class="small adoptly-text-danger d-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row px-5 small border-top">
+                        <div class="col-md-6 pt-3">
+                            <fieldset class="form-group">
+                                <legend class="form-check-label text-center d-block mb-3">Sex</legend>
+                                <div class="d-flex justify-content-center mb-2">
+                                    @foreach (var sex in typeof(Sex).GetEnumNames())
+                                    {
+                                        var id = $"Sex{sex}";
+                                        <div class="form-check form-check-inline">
+                                            <input asp-for="Sex" class="form-check-input" type="radio" value="@sex" id="@id">
+                                            <label for="@id" class="form-check-label">@sex</label>
+                                        </div>
+                                    }
+                                </div>
+                                <span asp-validation-for="Sex" class="small adoptly-text-danger d-block text-center"></span>
+                            </fieldset>
+                            <div class="form-group text-center">
+                                <label asp-for="Independence" class="form-check-label text-center d-block mb-3"></label>
+                                @Html.DropDownListFor(pet => pet.Independence, Html.GetEnumSelectList(typeof(ValueScale)), "Select one...", new { @class = "form-select" })
+                                <span asp-validation-for="Independence" class="small adoptly-text-danger d-block"></span>
+                            </div>
+                            <div class="form-group text-center">
+                                <label asp-for="ActivityLevel" class="form-check-label text-center d-block mb-3 mt-2"></label>
+                                @Html.DropDownListFor(pet => pet.ActivityLevel, Html.GetEnumSelectList(typeof(ValueScale)), "Select one...", new { @class = "form-select" })
+                                <span asp-validation-for="ActivityLevel" class="small adoptly-text-danger d-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 pt-3">
+                            <div class="form-group text-center">
+                                <fieldset>
+                                    <legend class="form-check-label text-center d-block mb-3">Desexed</legend>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" asp-for="Desexed" id="DesexedYes" value="@true">
+                                        <label class="form-check-label" asp-for="Desexed" for="DesexedYes">
+                                            Yes
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" asp-for="Desexed" id="DesexedNo" value="@false">
+                                        <label class="form-check-label text-center d-block mb-3" asp-for="Desexed" for="DesexedNo">
+                                            No
+                                        </label>
+                                    </div>
+                                    <span asp-validation-for="Desexed" class="small adoptly-text-danger d-block"></span>
+                                </fieldset>
+                            </div>
+                            <div class="form-group text-center">
+                                <fieldset>
+                                    <legend class="form-check-label text-center d-block mb-3">Allergy friendly</legend>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" asp-for="AllergyFriendly" id="AllergyFriendlyYes" value="@true">
+                                        <label class="form-check-label" asp-for="AllergyFriendly" for="AllergyFriendlyYes">
+                                            Yes
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" asp-for="AllergyFriendly" id="AllergyFriendlyNo" value="@false">
+                                        <label class="form-check-label text-center d-block mb-3" asp-for="AllergyFriendly" for="AllergyFriendlyNo">
+                                            No
+                                        </label>
+                                    </div>
+                                    <span asp-validation-for="AllergyFriendly" class="small adoptly-text-danger d-block"></span>
+                                </fieldset>
+                            </div>
+                            <div class="form-group text-center">
+                                <label asp-for="Budget" class="form-check-label text-center d-block mb-3"></label>
+                                @Html.DropDownListFor(pet => pet.Budget, Html.GetEnumSelectList(typeof(ValueScale)), "Select one...", new { @class = "form-select" })
+                                <span asp-validation-for="Budget" class="small adoptly-text-danger d-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="submit" value="Create" class="btn btn-save gradient-btn position-absolute bottom-0 end-0">
+                </div>
+            </form>
+        </div>
+        <a href="javascript:void(0);" id="backButton" class="btn btn-back position-absolute bottom-0 start-0 shadow-none">Back</a>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#backButton").on("click", function () {
+            if (document.referrer) {
+                window.location = document.referrer;
+            } else {
+                window.history.back();
+            }
+        });
+    });
+</script>

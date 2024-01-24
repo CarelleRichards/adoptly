@@ -1,0 +1,46 @@
+﻿@model LoginViewModel
+@{
+    string title = Model.Admin ? "Admin log in" : "Welcome back!";
+    ViewData["Title"] = title;
+}
+
+<div class="row m-5 justify-content-md-center">
+    <div class="col-md-6 col-12 p-5 bg-white shadow-sm rounded-3">
+        <div>
+            <h1 class="adoptly-font-medium mb-1">@title</h1>
+            <p class="small text-muted">Log in to continue.</p>
+        </div>
+        <div class="d-flex flex-column gap-3">
+        <form class="d-flex flex-column gap-3" asp-action="Submit" novalidate>
+            <div class="form-floating">
+                <input asp-for="Email" type="email" class="form-control" placeholder="Enter your email...">
+                <label asp-for="Email"></label>
+                <span asp-validation-for="Email" class="small adoptly-text-danger d-block mt-1"></span>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Password" class="form-control" placeholder="Enter your password...">
+                <label asp-for="Password"></label>
+                <span asp-validation-for="Password" class="small adoptly-text-danger d-block mt-1"></span>
+            </div>
+            @Html.ValidationMessage("Failure", new { @class = "small adoptly-text-danger d-block" })
+            @if (ViewBag.Verification is not null)
+            {
+                <span class="small adoptly-text-danger d-block">
+                    @Html.ValidationMessage("Verification")
+                    @Html.Raw(ViewBag.Verification).
+                </span>
+            }
+            <div class="form-group">
+                <input type="submit" value="Log in" class="gradient-btn p-2 rounded-3 w-100">
+            </div>
+            <input asp-for="Admin" value=@Model.Admin.ToString() hidden>
+        </form>
+
+        <a class="small d-block adoptly-link" asp-controller="Email" asp-action="ResetPassword">Forgot password?</a>
+        @if (!Model.Admin)
+        {
+            <span class="small d-block text-muted">Don't have an account? <a asp-controller="SignUp" asp-action="Index" class="adoptly-link">Sign up</a>.</span>
+        }
+        </div>
+    </div>
+</div>

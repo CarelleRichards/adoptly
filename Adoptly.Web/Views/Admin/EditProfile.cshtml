@@ -1,0 +1,185 @@
+@model Admin
+@{
+    ViewData["Title"] = $"{Model.Username} - Edit profile";
+    UpdateEmailViewModel updateEmail = new() { Email = ViewBag.Email };
+    EditPasswordViewModel editPasswordViewModel = new();
+}
+
+<div class="container mt-5">
+    <ul class="nav nav-tabs rounded-top">
+        <li class="nav-item">
+            <a class="nav-link active d-flex flex-column align-items-center" href="#profile" data-bs-toggle="tab" id="profile_tab">
+                <p>Profile</p>
+                <i class="fa-solid fa-user"></i>
+            </a>
+        </li>
+
+        @if (Context.Session.GetString("Username") is not null && Context.Session.GetString("Username") == Model.Username)
+        {
+            <li class="nav-item">
+                <a class="nav-link d-flex flex-column align-items-center" href="#update_account" data-bs-toggle="tab" id="update_account_tab">
+                    <p>Account</p>
+                    <i class="fa-solid fa-lock"></i>
+                </a>
+            </li>
+        }
+    </ul>
+
+    <div class="tab-content bg-white shadow-sm rounded-3 p-3">
+        <div class="tab-pane fade show active pb-5" id="profile">
+            @if (Context.Session.GetString("Username") is not null &&
+                 Context.Session.GetString("Username") == Model.Username &&
+                 Model.ProfilePicture is not null)
+            {
+                <div class="col-md-4 mt-3 px-5 col-12 d-flex flex-column justify-content-start position-relative">
+                    <form asp-action="DeleteProfilePicture">
+                        <input type="submit" value="Delete Profile Picture" class="rose-btn btn-sm p-2 rounded-3 w-100">
+                    </form>
+                </div>
+            }
+            <form id="profileInformationForm" class="row g-3" asp-action="EditProfile" enctype="multipart/form-data">
+                <div class="col-md-4 mt-0 p-5 col-12 d-flex flex-column align-items-center position-relative">
+                    <img class="profile-pic mb-3" alt="Profile picture" src="/Admin/ProfilePicture/@Model.Username">
+                    <div class="form-group">
+                        <label asp-for="ImageFile" class="form-label">Upload a profile picture</label>
+                        <input class="form-control form-control-lg" asp-for="ImageFile" type="file" accept="image/png, image/heic, image/jpeg, image/jpg" aria-describedby="ProfilePictureHelp">
+                        <div id="ProfilePictureHelp" class="form-text">Accepts png, heic, jpeg and jpg files.<br>Recommended image size is 400 x 400 px.</div>
+                        <span asp-validation-for="ProfilePicture" class="small adoptly-text-danger d-block mt-1"></span>
+                    </div>
+                </div>
+                <div class="col-md-8 mt-0 p-5 col-12 d-flex flex-column align-items-start gap-2 position-relative">
+                    <h1 class="mb-0">Edit profile</h1>
+                    <h4 class="mb-4">@Model.Username</h4>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="FirstName" class="form-control" placeholder="First name...">
+                                <label asp-for="FirstName" class="control-label"></label>
+                                <span asp-validation-for="FirstName" class="small adoptly-text-danger d-block"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="LastName" class="form-control" placeholder="Last name...">
+                                <label asp-for="LastName" class="control-label"></label>
+                                <span asp-validation-for="LastName" class="small adoptly-text-danger d-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="align-items-center mb-5">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span class="ms-4">@Model.Login.Email</span>
+                    </div>*@
+                    <input type="submit" value="Save" class="btn btn-save gradient-btn position-absolute bottom-0 end-0">
+                </div>
+                <input asp-for="Username" hidden>
+                <input asp-for="LoginId" hidden>
+                <input asp-for="ProfilePicture" hidden>
+            </form>
+        </div>
+
+        @if (Context.Session.GetString("Username") is not null && Context.Session.GetString("Username") == Model.Username)
+        {
+            <div class="tab-pane fade" id="update_account">
+                <div class="row g-3 p-5">
+                    <div class="col-12">
+                        <h1 class="mb-4">Edit account information</h1>
+                    </div>
+                    <div class="col-md-6 p-5">
+                        <h2 class="mb-3">Change password</h2>
+                        @if (ViewBag.DisplayPasswordSuccess is not null && ViewBag.DisplayPasswordSuccess is true)
+                        {
+                            <p class="text-success">Password updated successfully!</p>
+                        }
+                        <form id="passwordChangeForm" asp-action="EditPassword" novalidate>
+                            <partial name="_EditPassword" model="@editPasswordViewModel"/>
+                        </form>
+                    </div>
+                    <div class="col-md-6 p-5">
+                        <h2 class="mb-3">Update email</h2>
+                        @if (ViewBag.DisplayEmailSuccess is not null && ViewBag.DisplayEmailSuccess is true)
+                        {
+                            <p class="text-success">
+                                Check your new email, click the link
+                                to confirm and your address will update once verified.
+                            </p>
+                        }
+                        <form asp-controller="Admin" asp-action="UpdateEmail" novalidate>
+                            <partial name="_UpdateEmail" model="@updateEmail"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+        <a href="javascript:void(0);" id="backButton" class="btn btn-back position-absolute bottom-0 start-0">Back</a>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        var pageHistory = [];
+
+        $("#backButton").on("click", function () {
+            window.location.reload();
+            if (pageHistory.length > 0) {
+                let previousPage = pageHistory.pop();
+                window.location = previousPage;
+                window.location.reload();
+            } else {
+                window.history.back();
+            }
+        });
+        function addToHistory() {
+            pageHistory.push(window.location.href);
+        }
+        $(document).on("click", "a", addToHistory);
+
+        if ('@ViewBag.DisplaySecurityTab') {
+            $('#update_account').addClass('show active');
+            $('#update_account_tab').addClass('active');
+            $('#profile').removeClass('show active');
+            $('#profile_tab').removeClass('active');
+        }
+    });
+</script>
+
+
+@*<div class="row m-5 justify-content-md-center">
+    @if (Context.Session.GetString("Username") is not null && Context.Session.GetString("Username") == Model.Username && Model.ProfilePicture is not null)
+    {
+        <form asp-action="DeleteProfilePicture">
+            <input type="submit" value="Delete Profile Picture" class="adoptly-btn-primary p-2 rounded-3 w-100">
+        </form>
+    }
+    <form class="d-flex flex-column gap-3" asp-action="EditProfile" enctype="multipart/form-data">
+        <input asp-for="Username" hidden="hidden" class="form-control">
+        <input asp-for="ProfilePicture" hidden="hidden" class="form-control">
+        <div class="form-floating">
+            <input asp-for="FirstName" class="form-control" placeholder="Enter your new password...">
+            <label asp-for="FirstName" class="control-label"></label>
+            <span asp-validation-for="FirstName" class="small adoptly-text-danger d-block"></span>
+        </div>
+        <div class="form-floating">
+            <input asp-for="LastName" class="form-control" placeholder="Confirm your new password...">
+            <label asp-for="LastName" class="control-label"></label>
+            <span asp-validation-for="LastName" class="small adoptly-text-danger d-block"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ImageFile" class="form-label">Upload a profile pic</label>
+            <input class="form-control form-control-lg" asp-for="ImageFile" type="file" accept="image/png, image/heic, image/jpeg, image/jpg" aria-describedby="ProfilePictureHelp">
+            <div id="ProfilePictureHelp" class="form-text">Accepts png, heic, jpeg and jpg files.<br>Recommended image size is 400 x 400 px.</div>
+            <span asp-validation-for="ProfilePicture" class="small adoptly-text-danger d-block mt-1"></span>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Edit" class="adoptly-btn-primary p-2 rounded-3 w-100">
+            @Html.ActionLink("Back", "Profile", "Admin", new { id = Model.Username }, new { @class = "btn btn-primary" })
+        </div>
+    </form>
+    <div class="d-flex flex-column gap-3">
+        <h2 class="mb-3">Update Email</h2>
+        <form asp-controller="Admin" asp-action="UpdateEmail">
+            <partial name="_UpdateEmail" model="@updateEmail">
+        </form>
+    </div>
+</div>*@

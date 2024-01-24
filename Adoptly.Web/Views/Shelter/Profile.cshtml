@@ -1,0 +1,193 @@
+﻿@model Shelter
+@{
+    ViewData["Title"] = $"{Model.Username} - Profile";
+    string role = Context.Session.GetString("Role");
+
+    PaginationViewModel pagination = new()
+    {
+        TotalResults = ViewBag.TotalResults,
+        TotalPages = ViewBag.TotalPages,
+        CurrentPage = ViewBag.CurrentPage,
+        Url = $"Shelter/Profile/{Model.Username}?"
+    };
+}
+
+<div class="container mt-5">
+    <ul class="nav nav-tabs rounded-top">
+        <li class="nav-item">
+            <a class="nav-link active d-flex flex-column align-items-center" href="#profile" data-bs-toggle="tab">
+                <p>Profile</p>
+                <i class="fa-solid fa-house"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex flex-column align-items-center" href="#pet_list" data-bs-toggle="tab">
+                <p>Pets</p>
+                <i class="fa-solid fa-paw"></i>
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content bg-white rounded-3 p-3">
+
+        <div class="tab-pane fade show active" id="profile">
+            <div class="row g-3">
+                <div class="col-md-4 mt-0 p-5 col-12 d-flex flex-column align-items-center">
+                    <!--
+                        Seeded shelters have been generated using code that randomises the profile picture
+                        from a selection of pictures. These are sourced from anastasy_helter (n.d. a),
+                        anastasy_helter (n.d. b) and anastasy_helter (n.d. c)
+                    -->
+                    <img class="profile-pic mb-3" data-bs-toggle="modal" data-bs-target="#imageModal"
+                         alt="Profile picture" src="/Shelter/ProfilePicture/@Model.Username" style="cursor: pointer;">
+                </div>
+                <div class="col-md-6 mt-0 p-5 col-12 d-flex flex-column align-items-start gap-2">
+                    <h1 class="mb-4">@Model.Name</h1>
+                    <h4 class="mb-4">@Model.Username</h4>
+
+                    <div class="align-items-center mb-2">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span class="ms-4">@Model.State</span>
+                    </div>
+                    <div class="align-items-center mb-2">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span class="ms-4">@Model.Login.Email</span>
+                    </div>
+                    @*                     <div class="align-items-center mb-5">
+            <i class="fa-solid fa-phone"></i>
+            <span class="ms-4">PHONE NUMBER</span>
+        </div>
+
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus tincidunt eget eros ut
+            molestie. Nulla non feugiat tellus. Quisque eget massa et urna aliquet ultricies ut nec orci.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sit amet ex imperdiet, faucibus
+            dolor in, tempus sem. Aliquam ornare feugiat interdum. Suspendisse a mauris sit amet felis
+            laoreet laoreet. Fusce consequat, sem sed imperdiet dignissim, purus ligula pellentesque nunc.
+        </p> *@
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="pet_list">
+            <div class="mt-0 p-5 col-12 d-flex flex-column align-items-start gap-2">
+                <span class="h1 mb-0">@Model.Name's pets</span>
+
+                <div class="scroll-box mb-3">
+                    @if (!Model.Pets.Any())
+                    {
+                        <div class="d-flex justify-content-center align-items-center nothing-to-see-here">
+                            <img src="/assets/img/logos/nothing_to_see_here.png" alt="No pets available">
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            @foreach (var pet in Model.Pets)
+                            {
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <a href="/Pet/Profile/@pet.Id" class="text-decoration-none">
+                                        <div class="pet-box text-decoration-none">
+                                            <div class="pet-image-container mx-auto">
+                                                <img class="pet-image" alt="Profile picture" src="/Pet/ProfilePicture/@pet.Id">
+                                            </div>
+                                            <h5 class="pet-name">@pet.Name</h5>
+                                            <p class="pet-description">@pet.Description</p>
+                                            <p class="pet-details">@pet.Breed | @pet.Colour</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+                            <partial name="_Pagination" model="@pagination"/>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <a href="javascript:void(0);" id="backButton" class="btn btn-back position-absolute bottom-0 start-0">Back</a>
+        @if (Context.Session.GetString("Username") is not null && (Context.Session.GetString("Username") == Model.Username || role == nameof(Admin)))
+        {
+            @if (role == nameof(Admin))
+            {
+                <a href="@Url.Action("EditProfile", "Shelter", new { shelterUsername = Model.Username })" class="btn btn-edit text-muted position-absolute top-0 end-0 shadow-none">
+                    <i class="fa-solid fa-pen-to-square px-1"></i>
+                    Edit profile
+                </a>
+            }
+            else
+            {
+                <a href="@Url.Action("EditProfile", "Shelter")" class="btn btn-edit text-muted position-absolute top-0 end-0 shadow-none">
+                    <i class="fa-solid fa-pen-to-square px-1"></i>
+                    Edit profile
+                </a>
+            }
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@Model.Name Profile Picture</h5>
+                <button type="button" class="btn-close-expand position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                <img class="img-fluid w-100" alt="Profile picture enlarged" src="/Shelter/ProfilePicture/@Model.Username">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var pageHistory = [];
+        var redirectAfterEdit = false;
+        var redirectAfterPet = false;
+
+        $("#backButton").on("click", function () {
+            if (redirectAfterEdit || redirectAfterPet) {
+                window.location = $('#dashboardLink').attr('href');
+                return;
+            }
+
+            if (pageHistory.length > 0) {
+                var previousPage = pageHistory.pop();
+                window.location = previousPage;
+                window.location.reload(true);
+            } else {
+                window.history.back();
+            }
+        });
+
+        function addToHistory() {
+            pageHistory.push(window.location.href);
+        }
+
+        if (window.location.href.includes('Profile') && document.referrer.includes('EditProfile')) {
+            redirectAfterEdit = true;
+        }
+        if (window.location.href.includes('Profile') && document.referrer.includes('Pet')) {
+            redirectAfterPet = true;
+        }
+
+        $(document).on("click", "a", addToHistory);
+    });
+</script>
+<script>
+    const profileTab = document.querySelectorAll("[href='#profile']");
+    const petTab = document.querySelectorAll("[href='#pet_list']");
+    const petPane = document.getElementById("pet_list");
+    const profilePane = document.getElementById("profile");
+
+    if (window.location.href.indexOf("page=") !== -1) {
+        profileTab[0].classList.remove("active");
+        profilePane.classList.remove("active");
+        profilePane.classList.remove("show");
+        petTab[0].classList.add("active");
+        petPane.classList.add("active");
+        petPane.classList.add("show");
+    }
+</script>

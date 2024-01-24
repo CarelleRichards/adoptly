@@ -1,0 +1,98 @@
+@model ApplicationFormViewModel
+@{
+    ViewData["Title"] = $"Update Application Form - {Model.PetName}";
+}
+
+<div class="bg-white p-4 rounded-3 shadow-sm">
+    <h1>Edit application form</h1>
+    <p class="text-muted small mb-3 pb-3">Application form for @Model.PetName owned by @Model.ShelterName.</p>
+    <form asp-controller="Pet" asp-action="EditApplicationForm" class="border rounded-3 p-4">
+        <div class="mb-3 d-flex flex-column gap-3">
+            <input asp-for="PetId" hidden="hidden">
+            <input asp-for="PetName" hidden="hidden">
+            <input asp-for="ShelterName" hidden="hidden">
+            <input asp-for="FirstName" id="firstNameHidden" hidden="hidden">
+            <input asp-for="LastName" id="lastNameHidden" hidden="hidden">
+            <input asp-for="Email" id="emailHidden" hidden="hidden">
+            <fieldset class="row pt-0 g-3 border-bottom mb-3">
+                <legend class="fs-3 mb-3">Applicant</legend>
+                <div class="mb-3 col-md-6">
+                    <label asp-for="FirstName" class="form-label"></label>
+                    <input class="form-control" type="text" asp-for="FirstName" aria-label="First name" disabled>
+                </div>
+                <div class="mb-3 col-md-6">
+                    <label asp-for="LastName" class="form-label"></label>
+                    <input class="form-control" type="text" asp-for="LastName" aria-label="Last name" disabled>
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input class="form-control" type="text" asp-for="Email" aria-label="Email" aria-describedby="emailHelp" disabled>
+                    <div id="emailHelp" class="form-text">If your details need to be corrected, update your profile.</div>
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    <label asp-for="ContactNumber" class="form-label"></label>
+                    <input asp-for="ContactNumber" type="text" class="form-control" placeholder="Enter your contact number..." aria-describedby="contactNumberHelp">
+                    <span asp-validation-for="ContactNumber" class="small adoptly-text-danger d-block"></span>
+                    <div id="contactNumberHelp" class="form-text">This field also accepts valid Australian mobile numbers.</div>
+                </div>
+            </fieldset>
+
+            <fieldset class="row pt-0 g-3 border-bottom mb-3">
+                <legend class="fs-3 mb-3">Address</legend>
+                <div class="mb-3 col-12">
+                    <label asp-for="Address1" class="form-label"></label>
+                    <input asp-for="Address1" type="text" class="form-control" placeholder="Enter your street address...">
+                    <span asp-validation-for="Address1" class="small adoptly-text-danger d-block"></span>
+                </div>
+                <div class="mb-3 col-12">
+                    <label asp-for="Address2" class="form-label"></label>
+                    <input asp-for="Address2" type="text" class="form-control" placeholder="Apartment, studio, or floor (optional)...">
+                </div>
+                <div class="mb-3 col-md-6">
+                    <label asp-for="City" class="form-label"></label>
+                    <input asp-for="City" type="text" class="form-control" placeholder="Enter your city...">
+                    <span asp-validation-for="City" class="small adoptly-text-danger d-block"></span>
+                </div>
+                <div class="mb-3 col-md-3">
+                    @if (Model.State is null)
+                    {
+                        <label asp-for="State" class="form-label"></label>
+                        @Html.DropDownListFor(applicationFormViewModel => applicationFormViewModel.State, Html.GetEnumSelectList(typeof(State)), "Select a state...", new { @class = "form-select" })
+                        <span asp-validation-for="State" class="small adoptly-text-danger d-block"></span>
+                    }
+                    else
+                    {
+                        <label asp-for="State" class="form-label"></label>
+                        @Html.DropDownListFor(applicationFormViewModel => applicationFormViewModel.State, Html.GetEnumSelectList(typeof(State)), new { @class = "form-select" })
+                        <span asp-validation-for="State" class="small adoptly-text-danger d-block"></span>
+                    }
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label asp-for="Postcode" class="form-label"></label>
+                    <input asp-for="Postcode" type="text" class="form-control">
+                    <span asp-validation-for="Postcode" class="small adoptly-text-danger d-block"></span>
+                </div>
+
+                <div class="mb-3 col-12">
+                    <label asp-for="Country" class="form-label"></label>
+                    <input class="form-control" type="text" asp-for="Country" aria-label="Country" disabled>
+                </div>
+            </fieldset>
+
+
+            <fieldset class="row pt-0 g-3 mb-3">
+                <div class="mb-3">
+                    <label asp-for="AdoptionReason" class="form-label"></label>
+                    <textarea asp-for="AdoptionReason" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="AdoptionReason" class="small adoptly-text-danger d-block"></span>
+                </div>
+            </fieldset>
+        </div>
+        <div class="d-flex justify-content-between">
+            <a href="@Url.Action("Application", "Adopter", new { petId = Model.PetId })" class="btn adoptly-btn-secondary">Back</a>
+            <button type="submit" class="d-block ms-auto btn rose-btn">Update application</button>
+        </div>
+    </form>
+</div>

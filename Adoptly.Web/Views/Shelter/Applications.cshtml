@@ -1,0 +1,77 @@
+@model List<Pet>
+@{
+    ViewData["Title"] = "Applications";
+
+    PaginationViewModel pagination = new()
+    {
+        TotalResults = ViewBag.TotalResults,
+        TotalPages = ViewBag.TotalPages,
+        CurrentPage = ViewBag.CurrentPage,
+        Url = "Shelter/Applications?"
+    };
+}
+
+<div class="row gy-2 p-4 bg-white shadow-sm rounded-3 justify-content-md-center">
+
+    <div class="row gy-1 justify-content-md-center">
+
+        <div class="row gy-1 p-0 m-0 justify-content-md-between">
+            <div class="col-md-9 ms-0">
+                <h1 class="adoptly-font-medium mb-1">Applications</h1>
+                <span class="text-muted small">Here are the pets who have received adoption application.</span>
+            </div>
+                <a class="d-flex justify-content-end col-md-3 ms-auto adoptly-link pe-0 me-0 align-self-end" href="@Url.Action("ArchivedApplications", "Shelter", new { page = 1 })">All archived applications</a>
+        </div>
+    </div>
+
+    <div class="row gy-4 mt-2">
+
+        @if (!Model.Any())
+        {
+            <h6 class="mt-5 mb-5 pt-5 pb-5 d-block text-center text-muted">@ViewBag.ShelterName does not have any active applications for any pets.</h6>
+        }
+        else
+        {
+            @foreach (var pet in Model)
+            {
+                <!-- Card -->
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                    <a href="~/Shelter/PetApplications?petId=@pet.Id" style="color: unset; text-decoration: unset;">
+                        <div class="card">
+                            <img src="/Pet/ProfilePicture/@pet.Id" class="card-img-top" alt="Profile picture">
+                            <div class="card-header">
+                                <h3 class="pt-1 fw-bold">@pet.Name</h3>
+                                <span class="text-muted small">Breed: @pet.Breed</span>
+                                <p>
+                                    <span class="badge rounded-pill adoptly-badge-text-bg">@pet.AnimalType</span>
+                                    <span class="badge rounded-pill adoptly-badge-text-bg">@pet.Sex</span>
+                                    <span class="badge rounded-pill adoptly-badge-text-bg">@pet.Age years old</span>
+                                </p>
+                            </div>
+                            <div class="card-body">
+                                Total active applications: @pet.Applications.Count(x => x.Archived == false)
+                            </div>
+                            <div class="card-footer text-muted small">
+                                @switch (pet.Status)
+                                {
+                                    case Status.Available:
+                                        <span class="small text-success">@pet.Status</span>
+                                        break;
+                                    case Status.Adopted:
+                                        <span class="small text-danger">@pet.Status</span>
+                                        break;
+                                    case Status.OnHold:
+                                    case Status.Unavailable:
+                                    default:
+                                        <span class="small text-muted">@pet.Status</span>
+                                        break;
+                                }
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+    </div>
+    <partial name="_Pagination" model="@pagination"/>
+</div>

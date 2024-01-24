@@ -1,0 +1,17 @@
+﻿@model SearchDataViewModel
+@{
+}
+
+<!-- Search box -->
+
+<form asp-controller="Explore" asp-action="Search" method="get" novalidate>
+    <div class="input-group mb-4">
+        <div class="input-group-prepend d-flex align-content-center">
+            <div class="input-group-text bg-white border-0 text-muted">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+        </div>
+        <input asp-for="Term" type="search" class="form-control rounded border-0" placeholder="Search for a pet" aria-label="Search for a pet" aria-describedby="button-addon2">
+        <input class="hidden" type="submit" id="button-addon2">
+    </div>
+</form>

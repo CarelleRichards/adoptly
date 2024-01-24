@@ -1,0 +1,396 @@
+﻿@model SearchDataViewModel
+@{
+    ViewData["Title"] = "Explore pets";
+    string url = Url.Action("Search", "Explore", Model) + "&";
+    url = url[1..];
+
+    PaginationViewModel pagination = new()
+    {
+        TotalResults = (int)Model.ResultList.TotalCount,
+        TotalPages = ViewBag.TotalPages,
+        CurrentPage = ViewBag.CurrentPage,
+        Url = @url
+    };
+}
+
+<div class="row gy-2 p-4 bg-white shadow-sm rounded-3">
+
+    <!-- Search box -->
+
+    <div class="row gy-1">
+        <div class="col-md-6 col-12 mx-auto">
+            <partial name="_SearchBar"/>
+        </div>
+    </div>
+
+    <div class="row gy-1 mb-4">
+        <h1 class="adoptly-font-medium mb-1">Explore pets</h1>
+
+        <!-- Results title -->
+
+        @if (@Model.ResultList.TotalCount == 0)
+        {
+            <h2>No results found</h2>
+            <span>Check your spelling, try less specific search terms or remove some filters.</span>
+        }
+        else if (string.IsNullOrWhiteSpace(Model.Term))
+        {
+            <h2>All pets</h2>
+            <span class="text-muted small">@Model.ResultList.TotalCount pets(s) found</span>
+        }
+        else
+        {
+            <h2>Results for "@Model.Term"</h2>
+            <span class="text-muted small">@Model.ResultList.TotalCount pets(s) found</span>
+        }
+    </div>
+
+    <!-- Filter and sort results -->
+
+    <div class="row gy-1 mb-4">
+        <div class="col">
+            <form asp-controller="Explore" asp-action="Filter" method="get" id="Filter" novalidate>
+                <div class="row mb-4">
+                    <div class="col d-flex flex-grow-1 gap-4 justify-content-start align-items-start flex-wrap">
+                        <fieldset>
+                            <select asp-for="AnimalType" asp-items="Html.GetEnumSelectList(typeof(AnimalType))"
+                                    class="form-select" onchange="this.form.submit()">
+                            </select>
+                        </fieldset>
+                        <fieldset>
+                            <select asp-for="State" asp-items="Html.GetEnumSelectList(typeof(State))"
+                                    class="form-select" onchange="this.form.submit()">
+                            </select>
+                        </fieldset>
+                        <fieldset>
+                            <select asp-for="Sex" asp-items="Html.GetEnumSelectList(typeof(Sex))"
+                                    class="form-select" onchange="this.form.submit()">
+                            </select>
+                        </fieldset>
+                        <fieldset>
+                            <select asp-for="Status" asp-items="Html.GetEnumSelectList(typeof(Status))"
+                                    class="form-select" onchange="this.form.submit()">
+                            </select>
+                        </fieldset>
+                        <fieldset>
+                            <select asp-for="Colour" asp-items="Html.GetEnumSelectList(typeof(Colour))"
+                                    class="form-select" onchange="this.form.submit()">
+                            </select>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col d-flex justify-content-between flex-wrap align-items-center">
+                        <fieldset class="w-50">
+                            <legend>Age</legend>
+                            <div class="age-slider-container">
+                                <div class="slider-track"></div>
+                                <input asp-for="MinAge" type="range" min="0" max="10" class="form-range age-slider adoptly-color-rose" step="1" id="minAgeInput">
+                                <input asp-for="MaxAge" type="range" min="0" max="10" class="form-range age-slider adoptly-color-rose" step="1" id="maxAgeInput">
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <label for="minAgeInput" class="form-label" id="minAgeLabel">@Model.MinAge</label>
+                                <label for="maxAgeInput" class="form-label" id="maxAgeLabel">@Model.MaxAge</label>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="d-flex flex-row justify-content-between gap-4">
+                                <div class="form-check">
+                                    <input asp-for="Desexed" class="form-check-input" onchange="this.form.submit()">
+                                    <label class="form-check-label" asp-for="Desexed"></label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input asp-for="AllergyFriendly" class="form-check-input" onchange="this.form.submit()">
+                                    <label class="form-check-label" asp-for="AllergyFriendly"></label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex justify-content-end flex-wrap">
+
+                        <fieldset class="d-flex gap-4 align-items-center">
+                            <label class="form-check-label" asp-for="SortOrder"></label>
+                            <select asp-for="SortOrder" asp-items="Html.GetEnumSelectList(typeof(SortOrder))" class="form-select" onchange="this.form.submit()"></select>
+                        </fieldset>
+                    </div>
+                </div>
+                <input asp-for="Term" id="SearchedTerm" hidden>
+            </form>
+        </div>
+    </div>
+
+    <!-- Badges/tags for filters applied -->
+
+    <div class="row gy-1">
+        <div class="col d-flex gap-2 justify-content-center flex-wrap">
+            @foreach (AnimalType animalType in Model.AnimalType)
+            {
+                <span class="badge rounded-pill adoptly-badge-text-bg">
+                    <a href="#" class="text-decoration-none text-white" onclick="clearSelected('AnimalType', '@animalType');">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </a>@animalType
+                </span>
+            }
+            @foreach (State state in Model.State)
+            {
+                <span class="badge rounded-pill adoptly-badge-text-bg">
+                    <a href="#" class="text-decoration-none text-white" onclick="clearSelected('State', '@state');">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </a>@state
+                </span>
+            }
+            @foreach (Sex sex in Model.Sex)
+            {
+                <span class="badge rounded-pill adoptly-badge-text-bg">
+                    <a href="#" class="text-decoration-none text-white" onclick="clearSelected('Sex', '@sex');">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </a>@sex
+                </span>
+            }
+            @foreach (Status status in Model.Status)
+            {
+                <span class="badge rounded-pill adoptly-badge-text-bg">
+                    <a href="#" class="text-decoration-none text-white" onclick="clearSelected('Status', '@Html.DisplayFor(x => status)');">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </a>@Html.DisplayFor(x => status)
+                </span>
+            }
+            @foreach (Colour colour in Model.Colour)
+            {
+                <span class="badge rounded-pill adoptly-badge-text-bg">
+                    <a href="#" class="text-decoration-none text-white" onclick="clearSelected('Colour', '@colour');">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </a>@colour
+                </span>
+            }
+            @if (Model.Desexed)
+            {
+                <span class="badge rounded-pill adoptly-badge-text-bg">
+                    <a href="#" class="text-white text-decoration-none" onclick="clearChecked('Desexed');">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </a>@Html.DisplayNameFor(x => Model.Desexed)
+                </span>
+            }
+            @if (Model.AllergyFriendly)
+            {
+                <span class="badge rounded-pill adoptly-badge-text-bg">
+                    <a href="#" class="text-decoration-none text-white" onclick="clearChecked('AllergyFriendly');">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </a>@Html.DisplayNameFor(x => Model.AllergyFriendly)
+                </span>
+            }
+            @if (Model.MinAge != 0 || Model.MaxAge != 10)
+            {
+                string maxAge = Model.MaxAge == 10 ? "10+" : Model.MaxAge.ToString();
+                <span class="badge rounded-pill adoptly-badge-text-bg">
+                    <a href="#" class="text-white text-decoration-none" onclick="clearAgeRange()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </a>@Model.MinAge to @maxAge years old
+                </span>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Result tiles -->
+
+<div class="container-sm mt-4">
+    <div class="row gy-4">
+        @foreach (var pet in Model.ResultList.GetResults().ToList())
+        {
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-4">
+
+                <!-- Card -->
+
+                <a href="~/Pet/Profile/@pet.Document.Id" style="color: unset; text-decoration: unset;">
+                    <div class="card">
+                        <img src="/Pet/ProfilePicture/@pet.Document.Id" class="card-img-top" alt="Profile picture">
+                        <div class="card-header">
+                            <h3 class="pt-1 fw-bold">@pet.Document.Name</h3>
+                            <span class="text-muted small">Breed: @pet.Document.Breed</span>
+                            <p>
+                                <span class="badge rounded-pill adoptly-badge-text-bg">@pet.Document.AnimalType</span>
+                                <span class="badge rounded-pill adoptly-badge-text-bg">@pet.Document.Sex</span>
+                                <span class="badge rounded-pill adoptly-badge-text-bg">@pet.Document.Age years old</span>
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            @if (pet.Document.Description.ToString().Length >= 60)
+                            {
+                                <p class="card-text">@(pet.Document.Description[..60])...</p>
+                            }
+                            else
+                            {
+                                <p class="card-text">@pet.Document.Description</p>
+                            }
+                            @if (pet.Document.Status == Status.Available.ToString())
+                            {
+                                <span class="small text-success">@pet.Document.Status</span>
+                            }
+                            else if (pet.Document.Status == Status.Adopted.ToString())
+                            {
+                                <span class="small text-danger">@pet.Document.Status</span>
+                            }
+                            else
+                            {
+                                string status = pet.Document.Status == "OnHold" ? "On hold" : pet.Document.Status;
+                                <span class="small text-muted">@status</span>
+                            }
+                        </div>
+                        <div class="card-footer text-muted small">
+                            Date listed: @pet.Document.FirstListed.ToLocalTime().ToString("d/M/yyyy, h:mm tt")
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Pagination -->
+
+<partial name="_Pagination" model="@pagination">
+
+
+<!-- Basic CSS for sliders (needed for multiple thumbs) -->
+
+<script src="@Url.Content("~/lib/bootstrap/dist/js/vanillaSelectBox.js")"></script>
+
+<!-- JavaScript for filter tag elements (with cross on them) and age filter  -->
+
+<script>
+
+    const filterForm = document.getElementById("Filter");
+
+    // ** Filter tag elements **
+
+    // If filter is removed via cross icon, deselect it from multiselect box.
+    function clearSelected(id, value) {
+        const options = document.getElementById(id).options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].innerHTML == value) {
+                options[i].selected = false;
+                filterForm.submit();
+            }
+        }
+    }
+
+    // If filter is removed via cross icon, uncheck the checkbox.
+    function clearChecked(id) {
+        document.getElementById(id).checked = false;
+        filterForm.submit();
+    }
+
+    // If filter is removed via cross icon, reset age input range.
+    function clearAgeRange() {
+        minAgeInput.value = 0;
+        maxAgeInput.value = 10;
+        filterForm.submit();
+    }
+
+    // ** Age filter elements **
+
+    const minAgeInput = document.getElementById("minAgeInput");
+    const minAgeLabel = document.getElementById("minAgeLabel");
+    const maxAgeInput = document.getElementById("maxAgeInput");
+    const maxAgeLabel = document.getElementById("maxAgeLabel");
+    const sliderTrack = document.querySelector(".slider-track");
+
+    // Set min age label, restrict range and set track range colour.
+    minAgeInput.oninput = function () {
+        setMinAge();
+        fillColor();
+    };
+
+    // Set max age label, restrict range and set track range colour.
+    maxAgeInput.oninput = function () {
+        setMaxAge();
+        fillColor();
+    };
+
+    minAgeInput.onmouseup = function () {
+        filterForm.submit();
+    };
+
+    maxAgeInput.onmouseup = function () {
+        filterForm.submit();
+    };
+
+    function setMinAge() {
+        if (minAgeInput.value >= @Model.MaxAge) {
+            minAgeInput.value = @Model.MaxAge - 1;
+        }
+        minAgeLabel.innerHTML = ageString(minAgeInput.value);
+    }
+
+    function setMaxAge() {
+        if (maxAgeInput.value <= @Model.MinAge) {
+            maxAgeInput.value = @Model.MinAge + 1;
+        }
+        maxAgeLabel.innerHTML = ageString(maxAgeInput.value);
+    }
+
+    function ageString(age) {
+        if (age == 10) {
+            return "10+ years";
+        } else if (age == 1 || age == 0) {
+            return age + " year";
+        } else {
+            return age + " years";
+        }
+    }
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        fillColor();
+        setMaxAge();
+        setMinAge();
+    });
+    
+    // Set the track colour according to range.
+    function fillColor() {
+        percent1 = (minAgeInput.value / 10) * 100;
+        percent2 = (maxAgeInput.value / 10) * 100;
+        sliderTrack.style.background = `linear-gradient(to right, #dee2e6 ${percent1}% , #F15483 ${percent1}% , #F15483 ${percent2}%, #dee2e6 ${percent2}%)`;
+    }
+        
+    let animalTypeSelect = new vanillaSelectBox("#AnimalType", { placeHolder: "Animal type", });
+    let stateSelect = new vanillaSelectBox("#State", { placeHolder: "State" });
+    let sexSelect = new vanillaSelectBox("#Sex", { placeHolder: "Sex" });
+    let statusSelect = new vanillaSelectBox("#Status", { placeHolder: "Status" });
+    let colourSelect = new vanillaSelectBox("#Colour", { placeHolder: "Colour" });
+    let sortOrderSelect = new vanillaSelectBox("#SortOrder", { placeHolder: "Sort order" });
+
+    let vsbMainBtns = document.querySelectorAll(".vsb-main button");
+
+    vsbMainBtns.forEach(function(btn) {
+        btn.addEventListener("click", () => {
+            let vsbMenus = document.querySelectorAll(".vsb-menu");
+            vsbMenus.forEach(function (vsbMenu) {
+                if (vsbMenu.style.display === "block") {
+                    vsbMenu.style.display = "none";
+                } else {
+                    vsbMenu.style.display = "block";
+                }
+            });
+        });
+    });      
+</script>

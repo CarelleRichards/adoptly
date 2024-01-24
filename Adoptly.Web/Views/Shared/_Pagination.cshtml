@@ -1,0 +1,93 @@
+﻿@model PaginationViewModel
+
+@if (Model.TotalResults != 0)
+    {
+    <nav aria-label="Page navigation">
+        <ul class="pagination mt-4 justify-content-center">
+
+            <!-- If there are less than 3 pages, don't show previous and next buttons -->
+
+            @if (Model.TotalPages <= 3)
+            {
+                for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="~/@(Model.Url)page=@i">@i</a>
+                    </li>
+                }
+            }
+
+            <!-- If there are more than 3 pages, show only 3 page navigations with previous and next buttons -->
+
+            @if (Model.TotalPages > 3)
+            {
+                if (Model.CurrentPage == Model.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" aria-label="Previous" href="~/@(Model.Url)page=@(Model.CurrentPage - 1)">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    for (int i = Model.CurrentPage - 2; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="~/@(Model.Url)page=@i">@i</a>
+                        </li>
+                    }
+                }
+                else if (Model.CurrentPage == 1)
+                {
+                    for (int i = Model.CurrentPage; i <= Model.CurrentPage + 2; i++)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="~/@(Model.Url)page=@i">@i</a>
+                        </li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link" aria-label="Next" href="~/@(Model.Url)page=@(Model.CurrentPage + 1)">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" aria-label="Previous" href="~/@(Model.Url)page=@(Model.CurrentPage - 1)">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    for (int i = Model.CurrentPage - 1; i <= Model.CurrentPage + 1; i++)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="~/@(Model.Url)page=@i">@i</a>
+                        </li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link" aria-label="Next" href="~/@(Model.Url)page=@(Model.CurrentPage + 1)">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                }
+            }
+        </ul>
+    </nav>
+}
+
+<script>
+
+    // Set active page styling.
+
+    const pageLinks = document.getElementsByClassName("page-link");
+    const pageItems = document.getElementsByClassName("page-item");
+
+    
+    for (let i = 0; i < pageLinks.length; i++) {
+        if (pageLinks[i].innerHTML == @Model.CurrentPage) {
+            pageItems[i].classList.add("active");
+            pageItems[i].setAttribute("aria-current", "page");
+        } else {
+            pageItems[i].classList.remove("active");
+            pageItems[i].removeAttribute("aria-current", "page");
+        }
+    }
+</script>

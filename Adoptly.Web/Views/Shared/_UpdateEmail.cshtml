@@ -1,0 +1,8 @@
+@model UpdateEmailViewModel
+
+<div class="mb-3">
+    <label asp-for="Email" class="control-label"></label>
+    <input asp-for="Email" class="form-control" placeholder="Enter your new email...">
+    <span asp-validation-for="Email" class="small adoptly-text-danger d-block"></span>
+</div>
+<button type="submit" class="btn rose-btn">Verify new email</button>
