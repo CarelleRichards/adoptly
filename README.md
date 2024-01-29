@@ -57,3 +57,7 @@ Adoptly implements a relational database using Azure SQL Database.
 
 ### Admin analytics dashboard
 <img src="https://github.com/CarelleRichards/adoptly/assets/137973963/6870c8cc-1548-4556-92c1-53e05ed2c2fc" width=800px>
+
+## References
+
+[View references cited within the code ➡️](https://github.com/CarelleRichards/adoptly/wiki/References)
