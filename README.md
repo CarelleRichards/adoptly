@@ -27,7 +27,7 @@ Note that the application is no longer live on the Azure platform.
 
 Adoptly implements a relational database using Azure SQL Database.
 
-<img src="https://github.com/CarelleRichards/adoptly/assets/137973963/183ec438-2c74-466e-b9bf-14062a35b030"><br>
+<img src="https://github.com/CarelleRichards/adoptly/assets/137973963/1ce5aef0-d85f-4082-9a6e-efa62e762d08"><br>
 
 ## Application preview screenshots
 
