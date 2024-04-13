@@ -81,7 +81,7 @@ public class MatchmakerService
     }
 
     private List<Match> GetMatchesFromQuiz(Quiz quiz)
-	{
+    {
         List<Pet> pets = _petManager.GetAll();
         _petScores = new();
 
@@ -115,7 +115,7 @@ public class MatchmakerService
                 });
         }
         return matches;
-	}
+    }
 
     // What type of animal are you looking for?
 
